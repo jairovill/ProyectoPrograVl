@@ -1,0 +1,135 @@
+﻿@{
+    ViewData["Title"] = "Inicio";
+    Layout = "_Layout";
+}
+
+@using Microsoft.AspNetCore.Authorization
+@inject IAuthorizationService AuthorizationService
+
+<div class="content-area">
+    <div class="home-page">
+        <div class="home-header">
+            <h1 class="home-title">Sistema Facturación Librería Herrera</h1>
+            <h3 class="home-subtitle">Bienvenido @User.Identity?.Name</h3>
+        </div>
+
+        <div class="home-content">
+            <div class="cards-grid">
+                <!-- Tarjeta Autor - Solo para Admin -->
+                @if ((await AuthorizationService.AuthorizeAsync(User, "Admin")).Succeeded)
+                {
+                    <div class="home-card">
+                        <i class="bi bi-person-rolodex card-icon"></i>
+                        <div class="card-content">
+                            <h5>Modulo Autor</h5>
+                            <p>Sistema de gestión de autores</p>
+                            <a class="btn btn-marron" asp-controller="AutorADO" asp-action="Index">Autor</a>
+                        </div>
+                    </div>
+                }
+
+                <!-- Tarjeta Categoría - Solo para Admin -->
+                @if ((await AuthorizationService.AuthorizeAsync(User, "Admin")).Succeeded)
+                {
+                    <div class="home-card">
+                        <i class="bi bi-tags card-icon"></i>
+                        <div class="card-content">
+                            <h5>Modulo Categoria</h5>
+                            <p>Sistema de gestión de categorias</p>
+                            <a class="btn btn-marron" asp-controller="CategoriaADO" asp-action="Index">Categoria</a>
+                        </div>
+                    </div>
+                }
+
+                <!-- Tarjeta Pedido - Accesible para todos -->
+                <div class="home-card">
+                    <i class="bi bi-receipt card-icon"></i>
+                    <div class="card-content">
+                        <h5>Modulo Pedido</h5>
+                        <p>Sistema de gestión de Pedidos</p>
+                        <a class="btn btn-marron" asp-controller="Pedido" asp-action="Index">Pedido</a>
+                    </div>
+                </div>
+
+
+                <!-- Tarjeta Carrito - Accesible para todos -->
+                <div class="home-card">
+                    <i class="bi bi-cart card-icon"></i>
+                    <div class="card-content">
+                        <h5>Modulo Carrito Compra</h5>
+                        <p>Sistema de gestión de Carrito</p>
+                        <a class="btn btn-marron" asp-controller="Carrito" asp-action="Index">Carrito Compra</a>
+                    </div>
+                </div>
+
+                <!-- Tarjeta Libro - Accesible para todos -->
+                <div class="home-card">
+                    <i class="bi bi-journal-plus card-icon"></i>
+                    <div class="card-content">
+                        <h5>Modulo Libro</h5>
+                        <p>Sistema de gestión de libros</p>
+                        <a class="btn btn-marron" asp-controller="LibroADO" asp-action="Index">Libro</a>
+                    </div>
+                </div>
+
+                <!-- Tarjeta Usuario - Solo para Admin -->
+                @if ((await AuthorizationService.AuthorizeAsync(User, "Admin")).Succeeded)
+                {
+                    <div class="home-card">
+                        <i class="bi bi-person-fill-add card-icon"></i>
+                        <div class="card-content">
+                            <h5>Modulo Usuario</h5>
+                            <p>Sistema de gestión de usuarios</p>
+                            <a class="btn btn-marron" asp-controller="UsuarioADO" asp-action="Index">Usuario</a>
+                        </div>
+                    </div>
+                }
+
+                <!-- Tarjeta Documento Identidad - Solo para Admin -->
+                @if ((await AuthorizationService.AuthorizeAsync(User, "Admin")).Succeeded)
+                {
+                    <div class="home-card">
+                        <i class="bi bi-person-vcard card-icon"></i>
+                        <div class="card-content">
+                            <h5>Modulo Documento Identidad</h5>
+                            <p>Sistema de gestión de documentos</p>
+                            <a class="btn btn-marron" asp-controller="DocumentoIdentidadADO" asp-action="Index">Documento</a>
+                        </div>
+                    </div>
+                }
+
+                <!-- Tarjeta Rol - Solo para Admin -->
+                @if ((await AuthorizationService.AuthorizeAsync(User, "Admin")).Succeeded)
+                {
+                    <div class="home-card">
+                        <i class="bi bi-person-badge card-icon"></i>
+                        <div class="card-content">
+                            <h5>Modulo Rol</h5>
+                            <p>Sistema de gestión de roles</p>
+                            <a class="btn btn-marron" asp-controller="RolADO" asp-action="Index">Rol</a>
+                        </div>
+                    </div>
+                }
+
+                <!-- Tarjeta Bitácora - Solo para Admin -->
+                @if ((await AuthorizationService.AuthorizeAsync(User, "Admin")).Succeeded)
+                {
+                    <div class="home-card">
+                        <i class="bi bi-journal-text card-icon"></i>
+                        <div class="card-content">
+                            <h5>Modulo Bitacora</h5>
+                            <p>Sistema de gestión de Bitacoras</p>
+                            <a class="btn btn-marron" asp-controller="Bitacora" asp-action="Index">Bitacora</a>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <!-- Sección "Quiénes somos" -->
+            <div class="about-section">
+                <h2>¿Quiénes somos?</h2>
+                <p>Somos una empresa que se dedica al desarrollo de software según las necesidades de los clientes.</p>
+            </div>
+        </div>
+    </div>
+</div>

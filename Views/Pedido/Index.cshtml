@@ -1,0 +1,64 @@
+﻿@model List<ProyectoPrograVI.Models.Pedido>
+@{
+    ViewData["Title"] = "Mis Pedidos";
+    Layout = "_Layout";
+}
+
+<div class="content-area">
+    <h2 class="mb-4">Mis Pedidos</h2>
+
+    @if (Model == null || !Model.Any())
+    {
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle me-2"></i> No tienes pedidos registrados.
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table-marron">
+                <thead>
+                    <tr>
+                        <th>N° Pedido</th>
+                        <th>Fecha</th>
+                        <th>Total</th>
+                        <th>Método Pago</th>
+                        <th>Estado</th>
+                        <th>Pago</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var pedido in Model)
+                    {
+                        <tr>
+                            <td>@pedido.NumeroSeguimiento</td>
+                            <td>@pedido.FechaPedido.ToString("dd/MM/yyyy")</td>
+                            <td>₡@pedido.Total.ToString("N2")</td>
+                            <td>@pedido.MetodoPago.Nombre</td>
+                            <td>
+                                <span class="badge
+                                      @(pedido.Estado == "entregado" ? "bg-success" :
+                                        pedido.Estado == "cancelado" ? "bg-danger" : "bg-warning")">
+                                    @pedido.Estado
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge
+                                      @(pedido.EstadoPago == "completado" ? "bg-success" :
+                                        pedido.EstadoPago == "fallido" ? "bg-danger" : "bg-warning")">
+                                    @pedido.EstadoPago
+                                </span>
+                            </td>
+                            <td>
+                                <a asp-action="Details" asp-route-id="@pedido.PedidoId" class="btn btn-sm btn-outline-marron">
+                                    <i class="bi bi-eye"></i> Detalles
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

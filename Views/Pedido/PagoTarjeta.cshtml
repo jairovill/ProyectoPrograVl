@@ -1,0 +1,139 @@
+﻿@model ProyectoPrograVI.Models.PagoTarjetaViewModel
+@{
+    ViewData["Title"] = "Pago con Tarjeta";
+}
+
+<div class="container mt-4">
+    <h2>@ViewData["Title"]</h2>
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-credit-card me-2"></i>Complete los datos de su tarjeta
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="PagoTarjeta" method="post" class="needs-validation" novalidate>
+                        <input type="hidden" asp-for="PedidoId" />
+                        <input type="hidden" asp-for="MetodoPago" />
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="NombreTitular" class="form-label">Nombre del Titular</label>
+                                <input asp-for="NombreTitular" class="form-control"
+                                       placeholder="Como aparece en la tarjeta" required />
+                                <span asp-validation-for="NombreTitular" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="NumeroTarjeta" class="form-label">Número de Tarjeta</label>
+                                <input asp-for="NumeroTarjeta" class="form-control"
+                                       placeholder="1234 5678 9012 3456" required />
+                                <span asp-validation-for="NumeroTarjeta" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="FechaVencimiento" class="form-label">Vencimiento (MM/AA)</label>
+                                <input asp-for="FechaVencimiento" class="form-control"
+                                       placeholder="MM/AA" required />
+                                <span asp-validation-for="FechaVencimiento" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="ICVV" class="form-label">Código CVV</label>
+                                <input asp-for="ICVV" class="form-control"
+                                       placeholder="123" required />
+                                <span asp-validation-for="ICVV" class="text-danger"></span>
+                            </div>
+
+                            <div class="col-md-4 mb-3 d-flex align-items-end">
+                                <div class="w-100">
+                                    <small class="text-muted d-block">
+                                        <i class="bi bi-info-circle"></i> 3-4 dígitos atrás
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="bi bi-check-circle-fill me-2"></i> Confirmar Pago
+                            </button>
+                            <a asp-action="Details" asp-controller="Pedido" asp-route-id="@Model.PedidoId"
+                               class="btn btn-outline-secondary">
+                                <i class="bi bi-arrow-left me-2"></i>Volver al pedido
+                            </a>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer bg-light">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">
+                            <i class="bi bi-shield-lock me-2"></i> Pagos 100% seguros
+                        </small>
+                        <div>
+                            <img src="https://cdn-icons-png.flaticon.com/512/196/196578.png" height="30" class="me-2" alt="Visa">
+                            <img src="https://cdn-icons-png.flaticon.com/512/196/196561.png" height="30" alt="Mastercard">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        // Formatear número de tarjeta
+        document.getElementById('NumeroTarjeta').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+            let formatted = value.replace(/(\d{4})/g, '$1 ').trim();
+            e.target.value = formatted;
+        });
+
+        // Formatear fecha de vencimiento
+        document.getElementById('FechaVencimiento').addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length > 2) {
+                value = value.substring(0, 2) + '/' + value.substring(2, 4);
+            }
+            e.target.value = value;
+        });
+
+        // Validación personalizada del formulario
+        (function() {
+            'use strict';
+
+            var forms = document.querySelectorAll('.needs-validation');
+
+            Array.prototype.slice.call(forms)
+                .forEach(function(form) {
+                    form.addEventListener('submit', function(event) {
+                        if (!form.checkValidity()) {
+                            event.preventDefault();
+                            event.stopPropagation();
+                        }
+
+                        form.classList.add('was-validated');
+                    }, false);
+                });
+        })();
+    </script>
+}

@@ -1,0 +1,286 @@
+﻿@model ProyectoPrograVI.Models.FiltroPedidosAdminViewModel
+
+@{
+    ViewData["Title"] = "Administración de Pedidos";
+}
+
+<div class="container mt-4">
+    <h2>@ViewData["Title"]</h2>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+
+    <!-- Filtros -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>Filtros</h5>
+        </div>
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-3">
+                    <label asp-for="Estado" class="form-label">Estado del Pedido</label>
+                    <select asp-for="Estado" asp-items="@(ViewBag.EstadosPedido)" class="form-select">
+                        <option value="">Todos</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label asp-for="EstadoPago" class="form-label">Estado del Pago</label>
+                    <select asp-for="EstadoPago" asp-items="@(ViewBag.EstadosPago)" class="form-select">
+                        <option value="">Todos</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label asp-for="FechaDesde" class="form-label">Desde</label>
+                    <input asp-for="FechaDesde" type="date" class="form-control" />
+                </div>
+
+                <div class="col-md-3">
+                    <label asp-for="FechaHasta" class="form-label">Hasta</label>
+                    <input asp-for="FechaHasta" type="date" class="form-control" />
+                </div>
+
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary">Filtrar</button>
+                    <a asp-action="Admin" class="btn btn-secondary">Limpiar</a>
+                </div>
+
+            </form>
+            <div class="col-12 mt-3">
+                <div class="d-flex justify-content-end gap-2">
+                    <form method="post" asp-action="ExportarCSV" class="d-inline">
+                        <input type="hidden" asp-for="Estado" />
+                        <input type="hidden" asp-for="EstadoPago" />
+                        <input type="hidden" asp-for="FechaDesde" />
+                        <input type="hidden" asp-for="FechaHasta" />
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-file-csv"></i> Exportar CSV
+                        </button>
+                    </form>
+                    <form method="post" asp-action="ExportarPDF" class="d-inline">
+                        <input type="hidden" asp-for="Estado" />
+                        <input type="hidden" asp-for="EstadoPago" />
+                        <input type="hidden" asp-for="FechaDesde" />
+                        <input type="hidden" asp-for="FechaHasta" />
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-file-pdf"></i> Exportar PDF
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Resultados -->
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5>Listado de Pedidos</h5>
+            <div>Total: @Model.TotalRegistros</div>
+        </div>
+
+        <div class="card-body">
+            @if (!Model.Pedidos.Any())
+            {
+                <div class="alert alert-info">No se encontraron pedidos con los filtros seleccionados</div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                                <th>N° Pedido</th>
+                                <th>Email del Cliente</th>
+                                <th>Fecha</th>
+                                <th>Total</th>
+                                <th>Estado</th>
+                                <th>Pago</th>
+                                <th>Método</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var pedido in Model.Pedidos)
+                            {
+                                <tr>
+                                    <td>@pedido.NumeroSeguimiento</td>
+                                    <td>@pedido.Cliente</td> <!-- Ahora muestra el email -->
+                                    <td>@pedido.FechaPedido.ToString("dd/MM/yyyy HH:mm")</td>
+                                    <td>@pedido.Total.ToString("C")</td>
+                                    <td>
+                                        <span class="badge @GetEstadoBadgeClass(pedido.Estado)">
+                                            @pedido.Estado
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge @GetEstadoPagoBadgeClass(pedido.EstadoPago)">
+                                            @pedido.EstadoPago
+                                        </span>
+                                    </td>
+                                    <td>@pedido.MetodoPago</td>
+                                    <td>
+                                       
+                                        <a asp-controller="Pedido" asp-action="Edit" asp-route-id="@pedido.PedidoId"
+                                           class="btn btn-sm btn-warning" title="Editar estado">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Paginación -->
+                <nav aria-label="Page navigation">
+                    <ul class="pagination justify-content-center">
+                        @{
+                            int totalPaginas = (int)Math.Ceiling((double)Model.TotalRegistros / Model.RegistrosPorPagina);
+                            int paginaInicio = Math.Max(1, Model.Pagina - 2);
+                            int paginaFin = Math.Min(totalPaginas, Model.Pagina + 2);
+                        }
+
+                        <li class="page-item @(Model.Pagina == 1 ? "disabled" : "")">
+                            <a class="page-link" asp-action="Admin"
+                               asp-route-estado="@Model.Estado"
+                               asp-route-estadoPago="@Model.EstadoPago"
+                               asp-route-fechaDesde="@Model.FechaDesde?.ToString("yyyy-MM-dd")"
+                               asp-route-fechaHasta="@Model.FechaHasta?.ToString("yyyy-MM-dd")"
+                               asp-route-pagina="1">
+                                &laquo;
+                            </a>
+                        </li>
+
+                        @for (int i = paginaInicio; i <= paginaFin; i++)
+                        {
+                            <li class="page-item @(i == Model.Pagina ? "active" : "")">
+                                <a class="page-link" asp-action="Admin"
+                                   asp-route-estado="@Model.Estado"
+                                   asp-route-estadoPago="@Model.EstadoPago"
+                                   asp-route-fechaDesde="@Model.FechaDesde?.ToString("yyyy-MM-dd")"
+                                   asp-route-fechaHasta="@Model.FechaHasta?.ToString("yyyy-MM-dd")"
+                                   asp-route-pagina="@i">
+                                    @i
+                                </a>
+                            </li>
+                        }
+
+                        <li class="page-item @(Model.Pagina == totalPaginas ? "disabled" : "")">
+                            <a class="page-link" asp-action="Admin"
+                               asp-route-estado="@Model.Estado"
+                               asp-route-estadoPago="@Model.EstadoPago"
+                               asp-route-fechaDesde="@Model.FechaDesde?.ToString("yyyy-MM-dd")"
+                               asp-route-fechaHasta="@Model.FechaHasta?.ToString("yyyy-MM-dd")"
+                               asp-route-pagina="@totalPaginas">
+                                &raquo;
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            }
+        </div>
+    </div>
+</div>
+
+@functions {
+    string GetEstadoBadgeClass(string estado)
+    {
+        return estado switch
+        {
+            "pendiente" => "bg-secondary",
+            "procesando" => "bg-primary",
+            "enviado" => "bg-info",
+            "entregado" => "bg-success",
+            "cancelado" => "bg-danger",
+            _ => "bg-secondary"
+        };
+    }
+
+    string GetEstadoPagoBadgeClass(string estadoPago)
+    {
+        return estadoPago switch
+        {
+            "pendiente" => "bg-secondary",
+            "completado" => "bg-success",
+            "fallido" => "bg-danger",
+            "reembolsado" => "bg-warning",
+            _ => "bg-secondary"
+        };
+    }
+
+}
+
+@section Styles {
+    <style>
+        .badge {
+            font-size: 0.9em;
+            padding: 0.35em 0.65em;
+        }
+
+        .table th {
+            white-space: nowrap;
+        }
+
+        /* Estilos para la tabla de pedidos */
+        .table-pedidos {
+            font-size: 0.9rem;
+        }
+
+            .table-pedidos th {
+                white-space: nowrap;
+                background-color: #f8f9fa;
+            }
+
+        .badge-estado {
+            font-size: 0.8em;
+            padding: 0.35em 0.65em;
+            min-width: 80px;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .pagination .page-item.active .page-link {
+            background-color: #0d6efd;
+            border-color: #0d6efd;
+        }
+    </style>
+}
+
+        @section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Inicializar DataTable para la tabla de pedidos
+            $('.table-pedidos').DataTable({
+                responsive: true,
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.11.5/i18n/es-ES.json'
+                },
+                dom: '<"top"f>rt<"bottom"lip><"clear">',
+                pageLength: 10,
+                order: [[2, 'desc']] // Ordenar por fecha (columna 2) descendente
+            });
+
+            // Cerrar automáticamente las alertas después de 5 segundos
+            setTimeout(function() {
+                $('.alert').alert('close');
+            }, 5000);
+
+            // Confirmación para acciones importantes
+            $('.btn-eliminar').on('click', function() {
+                return confirm('¿Está seguro que desea eliminar este pedido?');
+            });
+        });
+    </script>
+}

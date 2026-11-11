@@ -1,0 +1,88 @@
+﻿@{
+    ViewData["Title"] = "Finalizar Compra";
+}
+
+<div class="container mt-4">
+    <h2>@ViewData["Title"]</h2>
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+    }
+
+    <div class="row">
+        <div class="col-md-8">
+            <h4>Resumen de tu pedido</h4>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th>Cantidad</th>
+                        <th>Precio Unitario</th>
+                        <th>Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in ViewBag.ItemsCarrito)
+                    {
+                        <tr>
+                            <td>@item.Titulo</td>
+                            <td>@item.Cantidad</td>
+                            <td>₡@item.Precio.ToString("N2")</td> <!-- Cambiado de PrecioUnitario a Precio -->
+                            <td>₡@((item.Precio * item.Cantidad).ToString("N2"))</td> <!-- Cambiado aquí también -->
+                        </tr>
+                    }
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th colspan="3">Subtotal:</th>
+                        <th>₡@ViewBag.Subtotal.ToString("N2")</th>
+                    </tr>
+                    <tr>
+                        <th colspan="3">Impuestos (13%):</th>
+                        <th>₡@ViewBag.Impuestos.ToString("N2")</th>
+                    </tr>
+                    <tr class="table-active">
+                        <th colspan="3">Total:</th>
+                        <th>₡@ViewBag.Total.ToString("N2")</th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Información de Envío y Pago</h5>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Checkout" method="post">
+                        <div class="form-group mb-3">
+                            <label for="direccionEnvio" class="form-label">Dirección de Envío</label>
+                            <input type="text" class="form-control" id="direccionEnvio" name="direccionEnvio" required>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label for="metodoPagoId" class="form-label">Método de Pago</label>
+                            <select class="form-select" id="metodoPagoId" name="metodoPagoId" required>
+                                <option value="">Seleccione un método de pago</option>
+                                @foreach (var metodo in ViewBag.MetodosPago)
+                                {
+                                    <option value="@metodo.MetodoPagoId">@metodo.Nombre</option>
+                                }
+                            </select>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-check-circle"></i> Confirmar Compra
+                        </button>
+
+                        <a asp-action="Index" asp-controller="Carrito" class="btn btn-secondary w-100 mt-2">
+                            <i class="bi bi-arrow-left"></i> Volver al Carrito
+                        </a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,181 @@
+﻿@model ProyectoPrograVI.Models.Libro
+
+@{
+    ViewData["Title"] = "Editar Libro";
+}
+
+<div class="content-area">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0"><i class="fas fa-book me-2"></i> Editar Libro: @Model.Titulo</h4>
+        </div>
+        <div class="card-body">
+            <form asp-action="Edit" method="post" class="needs-validation" novalidate enctype="multipart/form-data">
+                <input type="hidden" asp-for="LibroId" />
+
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div class="alert alert-danger mb-4">
+                        <h5 class="alert-heading">Errores de validación</h5>
+                        <ul class="mb-0">
+                            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                            {
+                                <li>@error.ErrorMessage</li>
+                            }
+                        </ul>
+                    </div>
+                }
+
+                <div class="row">
+                    <!-- Columna Izquierda - Información Básica -->
+                    <div class="col-md-6">
+                        <div class="bg-marron-claro p-3 rounded mb-4">
+                            <h5 class="text-white mb-0"><i class="fas fa-info-circle me-2"></i>Información Básica</h5>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="Titulo" class="form-label fw-bold">Título*</label>
+                            <input asp-for="Titulo" class="form-control" required />
+                            <span asp-validation-for="Titulo" class="text-danger small"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="CategoriaId" class="form-label fw-bold">Categoría*</label>
+                            <select asp-for="CategoriaId" asp-items="Model.Categorias" class="form-select" required>
+                                <option value="">Seleccione una categoría</option>
+                            </select>
+                            <span asp-validation-for="CategoriaId" class="text-danger small"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="AutorId" class="form-label fw-bold">Autor*</label>
+                            <select asp-for="AutorId" asp-items="Model.Autores" class="form-select" required>
+                                <option value="">Seleccione un autor</option>
+                            </select>
+                            <span asp-validation-for="AutorId" class="text-danger small"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="Editorial" class="form-label">Editorial</label>
+                            <input asp-for="Editorial" class="form-control" />
+                            <span asp-validation-for="Editorial" class="text-danger small"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="ISBN" class="form-label">ISBN</label>
+                            <input asp-for="ISBN" class="form-control" />
+                            <span asp-validation-for="ISBN" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <!-- Columna Derecha - Detalles y Precio -->
+                    <div class="col-md-6">
+                        <div class="bg-marron-claro p-3 rounded mb-4">
+                            <h5 class="text-white mb-0"><i class="fas fa-list-alt me-2"></i>Detalles</h5>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="Precio" class="form-label fw-bold">Precio*</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-primary text-white">$</span>
+                                <input asp-for="Precio" type="number" step="0.01" min="0.01" class="form-control" required />
+                            </div>
+                            <span asp-validation-for="Precio" class="text-danger small"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="UnidadesDisponibles" class="form-label fw-bold">Unidades Disponibles*</label>
+                            <input asp-for="UnidadesDisponibles" type="number" min="0" class="form-control" required />
+                            <span asp-validation-for="UnidadesDisponibles" class="text-danger small"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="ImagenUrl" class="form-label">URL de la Imagen</label>
+                            <input asp-for="ImagenUrl" type="text" class="form-control" />
+                            <span asp-validation-for="ImagenUrl" class="text-danger small"></span>
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(Model.ImagenUrl))
+                        {
+                            <div class="mb-3">
+                                <label class="form-label">Imagen actual</label>
+                                <div>
+                                    <img src="@Model.ImagenUrl" alt="Portada del libro" style="max-height: 150px;" class="img-thumbnail border-primary" />
+                                </div>
+                            </div>
+                        }
+
+                        <div class="form-group mb-3">
+                            <label class="form-label">Cambiar imagen</label>
+                            <input type="file" name="imagenArchivo" class="form-control" accept="image/*" />
+                            <small class="text-muted">Formatos aceptados: JPG, PNG, GIF</small>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="Estado" class="form-label fw-bold">Estado*</label>
+                            <select asp-for="Estado" class="form-select" required>
+                                <option value="activo">Activo</option>
+                                <option value="inactivo">Inactivo</option>
+                            </select>
+                            <span asp-validation-for="Estado" class="text-danger small"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Descripción - Ancho completo -->
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group mb-3">
+                            <label asp-for="Descripcion" class="form-label">Descripción</label>
+                            <textarea asp-for="Descripcion" class="form-control" rows="4"></textarea>
+                            <span asp-validation-for="Descripcion" class="text-danger small"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between mt-4">
+                    <a asp-action="Index" class="btn btn-outline-marron px-4">
+                        <i class="fas fa-arrow-left me-2"></i> Cancelar
+                    </a>
+                    <button type="submit" class="btn btn-marron px-4">
+                        <i class="fas fa-save me-2"></i> Guardar Cambios
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        $(document).ready(function() {
+            // Validación de precio
+            $('form').submit(function() {
+                var precio = $('#Precio').val();
+                if (precio <= 0) {
+                    alert('El precio debe ser mayor que cero');
+                    return false;
+                }
+                return true;
+            });
+
+            // Mostrar vista previa de imagen si se selecciona un archivo
+            $('input[type="file"]').change(function(e) {
+                if (e.target.files && e.target.files[0]) {
+                    var fileName = e.target.files[0].name;
+                    var reader = new FileReader();
+                    reader.onload = function(e) {
+                        $('#ImagenUrl').val(fileName);
+                        // Actualizar vista previa si existe
+                        $('.img-thumbnail').attr('src', e.target.result);
+                    };
+                    reader.readAsDataURL(e.target.files[0]);
+                }
+            });
+        });
+    </script>
+}

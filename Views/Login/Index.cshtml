@@ -1,0 +1,82 @@
+﻿@model ProyectoPrograVI.Models.LoginViewModel
+
+@{
+    ViewData["Title"] = "Iniciar Sesión";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Librería Herrera</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="~/css/site.css" rel="stylesheet" asp-append-version="true" />
+    <link href="~/css/site.css" rel="stylesheet" />
+</head>
+<body class="login-container">
+    <div class="login-card">
+        <div class="login-header">
+            <h2 class="login-title">
+                <i class="bi bi-book me-2"></i>Librería Herrera
+            </h2>
+        </div>
+        <div class="login-body">
+            <form asp-action="Index" method="post">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-4"></div>
+
+                <div class="mb-4">
+                    <label asp-for="Email" class="form-label fw-bold">Correo Electrónico</label>
+                    <input asp-for="Email" class="form-control" placeholder="tu@email.com" />
+                    <span asp-validation-for="Email" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-4">
+                    <label asp-for="Password" class="form-label fw-bold">Contraseña</label>
+                    <div class="input-group">
+                        <input asp-for="Password" type="password" class="form-control" placeholder="••••••••" />
+                        <button class="btn btn-outline-secondary toggle-password" type="button">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                    </div>
+                    <span asp-validation-for="Password" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-4 form-check">
+                    <input asp-for="RememberMe" class="form-check-input" />
+                    <label asp-for="RememberMe" class="form-check-label">Recordar mi sesión</label>
+                </div>
+
+                <div class="d-grid mb-3">
+                    <button type="submit" class="btn btn-login">
+                        <i class="bi bi-box-arrow-in-right me-2"></i>Iniciar Sesión
+                    </button>
+                </div>
+
+                <div class="login-footer">
+                    <a asp-action="Registrar" class="login-link">
+                        <i class="bi bi-person-plus me-1"></i>Crear una cuenta
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+        $(document).ready(function() {
+            // Toggle para mostrar/ocultar contraseña
+            $('.toggle-password').click(function() {
+                const input = $(this).siblings('input');
+                const icon = $(this).find('i');
+                input.attr('type', input.attr('type') === 'password' ? 'text' : 'password');
+                icon.toggleClass('bi-eye bi-eye-slash');
+            });
+        });
+    </script>
+</body>
+</html>

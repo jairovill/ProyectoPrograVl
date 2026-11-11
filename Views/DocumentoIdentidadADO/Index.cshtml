@@ -1,0 +1,74 @@
+﻿@model IEnumerable<ProyectoPrograVI.Models.DocumentoIdentidad>
+
+@{
+    ViewData["Title"] = "Listado Documento Identidad";
+}
+
+@if (TempData["ErrorMensaje"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle me-2"></i> @TempData["ErrorMensaje"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<h1>Listado Documento Identidad</h1>
+<div class="d-flex justify-content-between mb-3">
+    <a asp-action="Create" class="btn btn-sm btn-outline-marron">
+        <i class="bi bi-plus-circle"></i> Agregar Nuevo
+    </a>
+    <a asp-action="Index" asp-controller="Home" class="btn btn-outline-regresar">
+        <i class="bi bi-arrow-left"></i> Regresar
+    </a>
+</div>
+
+<table id="tablaDocumentoIdentidad" class="table table-striped table-marron">
+    <thead>
+        <tr>
+            <th>ID Documento</th>
+            <th>Tipo Documento</th>
+            <th style="width: 160px;">Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var Documento in Model)
+        {
+            <tr>
+                <td>@Documento.documento_identidad_id</td>
+                <td>@Documento.nombre</td>
+                <td>
+                    <div class="btn-group" role="group">
+                        <a asp-action="Edit" asp-route-id="@Documento.documento_identidad_id" class="btn btn-sm btn-outline-marron" title="Editar">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        <a asp-action="Delete" asp-route-id="@Documento.documento_identidad_id" class="btn btn-sm btn-outline-danger" title="Eliminar">
+                            <i class="bi bi-trash"></i>
+                        </a>
+                    </div>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <link href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+    <!-- Iconos de Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+
+    <script>
+        $(document).ready(function () {
+            $('#tablaDocumentoIdentidad').DataTable({
+                language: {
+                    url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
+                },
+                dom: '<"top"lf>rt<"bottom"ip>',
+                columnDefs: [
+                    { orderable: false, targets: [2] } // Deshabilitar ordenación en columna de acciones
+                ]
+            });
+        });
+    </script>
+}

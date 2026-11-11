@@ -1,0 +1,277 @@
+﻿@model ProyectoPrograVI.Models.VistaCatalogo
+@using System.Security.Claims
+
+@{
+    ViewData["Title"] = "Catálogo de Libros";
+
+    var rolIdClaim = User.Claims.FirstOrDefault(c => c.Type == "rol_id");
+    int rolId = 0;
+    if (rolIdClaim != null && int.TryParse(rolIdClaim.Value, out int tempRolId))
+    {
+        rolId = tempRolId;
+    }
+
+    bool esAdmin = rolId == 1003;
+}
+
+<div class="content-area">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-0">Catálogo de Libros</h1>
+        <div>
+            @if (esAdmin)
+            {
+                <a asp-action="Create" class="btn btn-sm btn-outline-marron me-2">
+                    <i class="bi bi-plus-circle"></i> Nuevo Libro
+                </a>
+                <a asp-action="ExportarCSV" class="btn btn-sm btn-outline-success me-2">
+                    <i class="bi bi-file-earmark-excel"></i> Exportar
+                </a>
+            }
+            <a asp-action="Index" asp-controller="Home" class="btn btn-outline-regresar">
+                <i class="bi bi-arrow-left"></i> Regresar
+            </a>
+        </div>
+    </div>
+
+    <!-- Mensajes de alerta -->
+    @if (TempData["MensajeError"] != null)
+    {
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle me-2"></i> @TempData["MensajeError"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    @if (TempData["Mensaje"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle me-2"></i> @TempData["Mensaje"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle me-2"></i> @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- Filtros -->
+    <div class="card mb-4">
+        <div class="card-header" style="background-color: var(--color-primary); color: var(--text-light);">
+            <h5 class="mb-0">Filtrar Libros</h5>
+        </div>
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label">Buscar</label>
+                    <input type="text" name="search" class="form-control" value="@Model.TerminoBusqueda" placeholder="Título, autor o descripción" />
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Categoría</label>
+                    <select name="categoriaId" class="form-select">
+                        <option value="">Todas las categorías</option>
+                        @foreach (var categoria in Model.Categorias)
+                        {
+                            <option value="@categoria.Value" selected="@(categoria.Value == Model.CategoriaId?.ToString())">@categoria.Text</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Autor</label>
+                    <select name="autorId" class="form-select">
+                        <option value="">Todos los autores</option>
+                        @foreach (var autor in Model.Autores)
+                        {
+                            <option value="@autor.Value" selected="@(autor.Value == Model.AutorId?.ToString())">@autor.Text</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-marron w-100">
+                        <i class="bi bi-funnel"></i> Filtrar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Tarjetas de Libros - Versión compacta -->
+    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-3">
+        @foreach (var libro in Model.Libros)
+        {
+            <div class="col">
+                <div class="card catalog-card h-100 @(libro.Estado == "inactivo" ? "opacity-75" : "")">
+                    <div class="position-absolute top-0 end-0 m-1">
+                        @if (libro.Estado == "activo")
+                        {
+                            <span class="badge bg-success small">Activo</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger small">Inactivo</span>
+                        }
+                    </div>
+
+                    <div class="product-image-container-sm">
+                        @if (!string.IsNullOrEmpty(libro.ImagenUrl))
+                        {
+                            <img src="@libro.ImagenUrl" class="card-img-top" alt="@libro.Titulo" style="object-fit: contain; max-height: 100%;" />
+                        }
+                        else
+                        {
+                            <div class="d-flex align-items-center justify-content-center h-100" style="background-color: var(--color-light);">
+                                <i class="bi bi-book text-muted"></i>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="card-body p-2">
+                        <h6 class="card-title mb-1" style="font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">@libro.Titulo</h6>
+                        <p class="card-text text-muted small mb-1">@libro.AutorNombre</p>
+                        <span class="badge bg-info small mb-1">@libro.CategoriaNombre</span>
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span class="fw-bold" style="color: var(--color-primary); font-size: 0.9rem;">@libro.Precio.ToString("C")</span>
+                            @if (libro.UnidadesDisponibles > 0)
+                            {
+                                <span class="badge bg-success small">@libro.UnidadesDisponibles</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger small">Agotado</span>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="card-footer p-2 bg-white">
+                        <div class="d-flex justify-content-between">
+                            @if (libro.Estado == "activo")
+                            {
+                                <a asp-action="Details" asp-route-id="@libro.LibroId" class="btn btn-sm btn-outline-info p-1" title="Ver detalles">
+                                    <i class="bi bi-eye"></i>
+                                </a>
+                            }
+                            else
+                            {
+                                <button class="btn btn-sm btn-outline-secondary p-1" title="Libro inactivo" disabled>
+                                    <i class="bi bi-eye-slash"></i>
+                                </button>
+                            }
+
+                            @if (esAdmin)
+                            {
+                                <a asp-action="Edit" asp-route-id="@libro.LibroId" class="btn btn-sm btn-outline-marron p-1" title="Editar">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+
+                                @if (libro.Estado == "activo")
+                                {
+                                    <form asp-action="ToggleStatus" method="post" class="d-inline">
+                                        <input type="hidden" name="id" value="@libro.LibroId" />
+                                        <button type="submit" class="btn btn-sm btn-outline-warning p-1" title="Desactivar">
+                                            <i class="bi bi-toggle-on"></i>
+                                        </button>
+                                    </form>
+                                }
+                                else
+                                {
+                                    <form asp-action="ToggleStatus" method="post" class="d-inline">
+                                        <input type="hidden" name="id" value="@libro.LibroId" />
+                                        <button type="submit" class="btn btn-sm btn-outline-success p-1" title="Activar">
+                                            <i class="bi bi-toggle-off"></i>
+                                        </button>
+                                    </form>
+                                }
+                            }
+
+                            @if (libro.UnidadesDisponibles > 0 && libro.Estado == "activo")
+                            {
+                                <form asp-action="AddToCart" method="post" class="d-inline">
+                                    <input type="hidden" name="libroId" value="@libro.LibroId" />
+                                    <button type="submit" class="btn btn-sm btn-success p-1" title="Añadir al carrito">
+                                        <i class="bi bi-cart-plus"></i>
+                                    </button>
+                                </form>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Exportación Avanzada (solo para admin) -->
+    @if (esAdmin)
+    {
+        <div class="card mt-4">
+            <div class="card-header" style="background-color: var(--color-primary); color: var(--text-light);">
+                <h5 class="mb-0"><i class="bi bi-download"></i> Exportación Avanzada</h5>
+            </div>
+            <div class="card-body">
+                <form asp-action="ExportarCSVFiltrado" method="get" class="row g-3">
+                    <div class="col-md-3">
+                        <label class="form-label">Título</label>
+                        <input type="text" name="search" class="form-control" value="@Model.TerminoBusqueda" />
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Categoría</label>
+                        <select name="categoriaId" class="form-select">
+                            <option value="">Todas</option>
+                            @foreach (var categoria in Model.Categorias)
+                            {
+                                <option value="@categoria.Value" selected="@(categoria.Value == Model.CategoriaId?.ToString())">@categoria.Text</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Autor</label>
+                        <select name="autorId" class="form-select">
+                            <option value="">Todos</option>
+                            @foreach (var autor in Model.Autores)
+                            {
+                                <option value="@autor.Value" selected="@(autor.Value == Model.AutorId?.ToString())">@autor.Text</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Precio Mín</label>
+                        <input type="number" step="0.01" name="precioMin" class="form-control" value="@Model.PrecioMin" />
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label">Precio Máx</label>
+                        <input type="number" step="0.01" name="precioMax" class="form-control" value="@Model.PrecioMax" />
+                    </div>
+                    <div class="col-md-1 d-flex align-items-end">
+                        <button type="submit" class="btn btn-success w-100">
+                            <i class="bi bi-download"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    }
+
+    <!-- Paginación -->
+    @if (Model.TotalPaginas > 1)
+    {
+        <nav aria-label="Page navigation" class="mt-4">
+            <ul class="pagination justify-content-center">
+                @for (int i = 1; i <= Model.TotalPaginas; i++)
+                {
+                    <li class="page-item @(i == Model.PaginaActual ? "active" : "")">
+                        <a class="page-link"
+                           asp-action="Index"
+                           asp-route-page="@i"
+                           asp-route-search="@Model.TerminoBusqueda"
+                           asp-route-categoriaId="@Model.CategoriaId"
+                           asp-route-autorId="@Model.AutorId">@i</a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    }
+</div>
+
+@section Scripts {
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet" />
+}

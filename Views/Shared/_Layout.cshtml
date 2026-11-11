@@ -1,0 +1,194 @@
+﻿@using Microsoft.AspNetCore.Http
+@using Microsoft.AspNetCore.Authorization
+@inject Microsoft.AspNetCore.Authorization.IAuthorizationService AuthorizationService
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Librería Herrera</title>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" />
+
+    <!-- Iconos Bootstrap y Font Awesome -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Fuentes y estilos personalizados -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/ProyectoPrograVI.styles.css" asp-append-version="true" />
+
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css" />
+
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body>
+    @{
+        var usuarioId = Context.Session.GetInt32("usuario_id");
+        var nombreCompleto = Context.Session.GetString("nombre_completo");
+        var rolNombre = Context.Session.GetString("rol_nombre");
+    }
+
+    @if (User.Identity?.IsAuthenticated ?? false)
+    {
+        <div class="app-container d-flex" style="min-height: 100vh;">
+            <!-- Sidebar -->
+            <nav class="sidebar bg-primary p-3">
+                <a class="sidebar-brand d-flex align-items-center text-decoration-none" asp-controller="Home" asp-action="Index">
+                    <i class="bi bi-book me-2"></i>
+                    <span class="text-truncate">Librería Herrera</span>
+                </a>
+
+                <!-- Información de usuario -->
+                <div class="user-info mb-4 p-3 bg-dark rounded">
+                    <div class="d-flex align-items-center">
+                        <i class="bi bi-person-circle fs-3 text-accent me-3"></i>
+                        <div>
+                            <span class="d-block text-white fw-bold">@nombreCompleto</span>
+                            <small class="text-accent">@rolNombre</small>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="text-white opacity-25 my-3">
+
+                <ul class="nav flex-column">
+                    <!-- Menú según rol -->
+                    @if ((await AuthorizationService.AuthorizeAsync(User, "Admin")).Succeeded)
+                    {
+                        <li class="nav-item mb-2">
+                            <a class="nav-link d-flex align-items-center gap-2 text-white" asp-controller="AutorADO" asp-action="Index">
+                                <i class="bi bi-person-rolodex"></i>
+                                <span>Autores</span>
+                            </a>
+                        </li>
+                        <li class="nav-item mb-2">
+                            <a class="nav-link d-flex align-items-center gap-2 text-white" asp-controller="CategoriaADO" asp-action="Index">
+                                <i class="bi bi-tags"></i>
+                                <span>Categorías</span>
+                            </a>
+                        </li>
+                        <li class="nav-item mb-2">
+                            <a class="nav-link d-flex align-items-center gap-2 text-white" asp-controller="UsuarioADO" asp-action="Index">
+                                <i class="bi bi-people"></i>
+                                <span>Usuarios</span>
+                            </a>
+                        </li>
+                        <li class="nav-item mb-2">
+                            <a class="nav-link d-flex align-items-center gap-2 text-white" asp-controller="RolADO" asp-action="Index">
+                                <i class="bi bi-shield-lock"></i>
+                                <span>Roles</span>
+                            </a>
+                        </li>
+                        <li class="nav-item mb-2">
+                            <a class="nav-link d-flex align-items-center gap-2 text-white" asp-controller="Bitacora" asp-action="Index">
+                                <i class="bi bi-journal-text"></i>
+                                <span>Bitácora</span>
+                            </a>
+                        </li>
+
+                        <li class="nav-item mb-2">
+                            <a class="nav-link d-flex align-items-center gap-2 text-white" asp-controller="Pedido" asp-action="Admin">
+                                <i class="bi bi-clipboard2-data"></i>
+                                <span>Administrar Pedidos</span>
+                            </a>
+                        </li>
+                        <hr class="text-white opacity-25 my-3">
+                    }
+
+                    <!-- Menú común para todos los roles -->
+                    <li class="nav-item mb-2">
+                        <a class="nav-link d-flex align-items-center gap-2 text-white" asp-controller="LibroADO" asp-action="Index">
+                            <i class="bi bi-book"></i>
+                            <span>Libros</span>
+                        </a>
+                    </li>
+                    <li class="nav-item mb-2">
+                        <a class="nav-link d-flex align-items-center gap-2 text-white" asp-controller="Carrito" asp-action="Index">
+                            <i class="bi bi-cart"></i>
+                            <span>Carrito</span>
+                        </a>
+                    </li>
+                    <li class="nav-item mb-2">
+                        <a class="nav-link d-flex align-items-center gap-2 text-white" asp-controller="Pedido" asp-action="Index">
+                            <i class="bi bi-receipt"></i>
+                            <span>Mis Pedidos</span>
+                        </a>
+                    </li>
+
+                    <!-- Cerrar sesión -->
+                    <li class="nav-item mt-auto pt-3 border-top border-white border-opacity-25">
+                        <a class="nav-link d-flex align-items-center gap-2 text-danger" asp-controller="Login" asp-action="Logout">
+                            <i class="bi bi-box-arrow-right"></i>
+                            <span>Cerrar Sesión</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+
+            <!-- Main Content -->
+            <div class="main-content flex-grow-1 d-flex flex-column">
+                <main class="flex-grow-1 p-4 bg-light">
+                    <!-- Alertas mejoradas -->
+                    @if (TempData["SuccessMessage"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show mb-4">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-check-circle-fill me-2"></i>
+                                <div>@TempData["SuccessMessage"]</div>
+                            </div>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+                    @if (TempData["ErrorMessage"] != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show mb-4">
+                            <div class="d-flex align-items-center">
+                                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                <div>@TempData["ErrorMessage"]</div>
+                            </div>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+
+                    <div class="container-fluid">
+                        @RenderBody()
+                    </div>
+                </main>
+
+                <!-- Footer -->
+                <footer class="bg-dark text-white py-3">
+                    <div class="container text-center">
+                        &copy; 2025 - Librería Herrera -
+                        <a asp-controller="Home" asp-action="Privacy" class="text-accent text-decoration-none">Política de Privacidad</a>
+                    </div>
+                </footer>
+            </div>
+        </div>
+    }
+    else
+    {
+        <!-- Mostrar solo el contenido de la vista (para login/registro) -->
+        <div class="auth-container">
+            @RenderBody()
+        </div>
+    }
+
+    <!-- Scripts -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <!-- DataTables y validación -->
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,198 @@
+﻿@model ProyectoPrograVI.Models.Usuario
+
+@{
+    ViewData["Title"] = "Crear Nuevo Usuario";
+}
+
+<div class="content-area">
+    <div class="card shadow">
+        <div class="card-header bg-marron-claro text-light">
+            <h2 class="mb-0"><i class="fas fa-user-plus me-2"></i> Nuevo Usuario</h2>
+        </div>
+        <div class="card-body">
+            <form asp-action="Create" method="post" class="needs-validation" novalidate>
+
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div class="alert alert-danger mb-4">
+                        <ul class="mb-0">
+                            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                            {
+                                <li>@error.ErrorMessage</li>
+                            }
+                        </ul>
+                    </div>
+                }
+
+                <div class="row">
+                    <!-- Columna Izquierda - Datos Personales -->
+                    <div class="col-md-6">
+                        <h5 class="text-marron mb-3"><i class="fas fa-user-circle me-2"></i>Información Personal</h5>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="identificacion" class="form-label">Identificación*</label>
+                            <input asp-for="identificacion" class="form-control" required />
+                            <span asp-validation-for="identificacion" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="nombre" class="form-label">Nombre*</label>
+                            <input asp-for="nombre" class="form-control" required />
+                            <span asp-validation-for="nombre" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="apellido1" class="form-label">Primer Apellido*</label>
+                            <input asp-for="apellido1" class="form-control" required />
+                            <span asp-validation-for="apellido1" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="apellido2" class="form-label">Segundo Apellido</label>
+                            <input asp-for="apellido2" class="form-control" />
+                            <span asp-validation-for="apellido2" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="fecha_nacimiento" class="form-label">Fecha de Nacimiento</label>
+                            <input asp-for="fecha_nacimiento" type="date" class="form-control" />
+                            <span asp-validation-for="fecha_nacimiento" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <!-- Columna Derecha - Datos de Cuenta -->
+                    <div class="col-md-6">
+                        <h5 class="text-marron mb-3"><i class="fas fa-key me-2"></i>Datos de Acceso</h5>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="email" class="form-label">Email*</label>
+                            <input asp-for="email" type="email" class="form-control" required />
+                            <span asp-validation-for="email" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="contrasena" class="form-label">Contraseña*</label>
+                            <div class="input-group">
+                                <input asp-for="contrasena" type="password" class="form-control" id="password" required />
+                                <button class="btn btn-outline-marron" type="button" id="togglePassword">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <span asp-validation-for="contrasena" class="text-danger"></span>
+                            <div class="password-strength mt-2">
+                                <div class="progress" style="height: 5px;">
+                                    <div id="passwordStrength" class="progress-bar bg-success" role="progressbar"></div>
+                                </div>
+                                <small id="passwordHelp" class="form-text text-muted"></small>
+                            </div>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="rol_id" class="form-label">Rol*</label>
+                            <select asp-for="rol_id" asp-items="Model.Roles" class="form-select" required>
+                                <option value="">Seleccione un rol</option>
+                            </select>
+                            <span asp-validation-for="rol_id" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="documento_identidad_id" class="form-label">Tipo de Documento*</label>
+                            <select asp-for="documento_identidad_id" asp-items="Model.DocumentosIdentidad" class="form-select" required>
+                                <option value="">Seleccione un documento</option>
+                            </select>
+                            <span asp-validation-for="documento_identidad_id" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="estado" class="form-label">Estado*</label>
+                            <select asp-for="estado" asp-items="Model.Estados" class="form-select" required>
+                                <option value="">Seleccione un estado</option>
+                            </select>
+                            <span asp-validation-for="estado" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group mt-4 d-flex justify-content-between">
+                    <a asp-action="Index" class="btn btn-outline-marron">
+                        <i class="fas fa-arrow-left me-2"></i> Cancelar
+                    </a>
+                    <button type="submit" class="btn btn-marron">
+                        <i class="fas fa-save me-2"></i> Registrar Usuario
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        $(document).ready(function() {
+            // Toggle para mostrar/ocultar contraseña
+            $('#togglePassword').click(function() {
+                const passwordInput = $('#password');
+                const icon = $(this).find('i');
+
+                if (passwordInput.attr('type') === 'password') {
+                    passwordInput.attr('type', 'text');
+                    icon.removeClass('fa-eye').addClass('fa-eye-slash');
+                } else {
+                    passwordInput.attr('type', 'password');
+                    icon.removeClass('fa-eye-slash').addClass('fa-eye');
+                }
+            });
+
+            // Validación de fortaleza de contraseña
+            $('#password').on('input', function() {
+                const password = $(this).val();
+                const strengthBar = $('#passwordStrength');
+                const helpText = $('#passwordHelp');
+
+                // Calcular fortaleza
+                let strength = 0;
+                let message = '';
+
+                if (password.length > 0) strength += 1;
+                if (password.length >= 8) strength += 1;
+                if (/[A-Z]/.test(password)) strength += 1;
+                if (/[0-9]/.test(password)) strength += 1;
+                if (/[^A-Za-z0-9]/.test(password)) strength += 1;
+
+                // Actualizar barra y mensaje
+                const width = strength * 20;
+                strengthBar.css('width', width + '%');
+
+                switch(strength) {
+                    case 0:
+                        strengthBar.removeClass('bg-danger bg-warning bg-success').addClass('bg-danger');
+                        message = 'Muy débil';
+                        break;
+                    case 1:
+                    case 2:
+                        strengthBar.removeClass('bg-danger bg-warning bg-success').addClass('bg-danger');
+                        message = 'Débil';
+                        break;
+                    case 3:
+                        strengthBar.removeClass('bg-danger bg-warning bg-success').addClass('bg-warning');
+                        message = 'Moderada';
+                        break;
+                    case 4:
+                        strengthBar.removeClass('bg-danger bg-warning bg-success').addClass('bg-success');
+                        message = 'Fuerte';
+                        break;
+                    case 5:
+                        strengthBar.removeClass('bg-danger bg-warning bg-success').addClass('bg-success');
+                        message = 'Muy fuerte';
+                        break;
+                }
+
+                helpText.text(message);
+            });
+        });
+    </script>
+}

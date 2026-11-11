@@ -1,0 +1,92 @@
+﻿@model ProyectoPrograVI.Models.Usuario
+
+@{
+    ViewData["Title"] = "Eliminar Usuario";
+}
+
+<div class="card border-danger">
+    <div class="card-header bg-danger text-white">
+        <h3 class="mb-0">
+            <i class="bi bi-exclamation-triangle"></i> Eliminar Usuario
+        </h3>
+    </div>
+    <div class="card-body">
+        <h5 class="text-danger">¿Está seguro que desea eliminar este usuario?</h5>
+        <p class="text-muted">Esta acción no podrá deshacerse y afectará el acceso del usuario al sistema.</p>
+
+        <hr />
+
+        <div class="row">
+            <!-- Datos Personales -->
+            <div class="col-md-6">
+                <h5 class="text-primary">Información Personal</h5>
+                <dl class="row">
+                    <dt class="col-sm-4">Identificación</dt>
+                    <dd class="col-sm-8">@Model.identificacion</dd>
+
+                    <dt class="col-sm-4">Nombre Completo</dt>
+                    <dd class="col-sm-8">@Model.nombre @Model.apellido1 @Model.apellido2</dd>
+
+                    <dt class="col-sm-4">Fecha Nacimiento</dt>
+                    <dd class="col-sm-8">@Model.fecha_nacimiento?.ToString("yyyy-MM-dd")</dd>
+                </dl>
+            </div>
+
+            <!-- Datos de Cuenta -->
+            <div class="col-md-6">
+                <h5 class="text-primary">Información de Cuenta</h5>
+                <dl class="row">
+                    <dt class="col-sm-4">Email</dt>
+                    <dd class="col-sm-8">@Model.email</dd>
+
+                    <dt class="col-sm-4">Rol</dt>
+                    <dd class="col-sm-8">@Model.rol_nombre</dd>
+
+                    <dt class="col-sm-4">Tipo Documento</dt>
+                    <dd class="col-sm-8">@Model.documento_nombre</dd>
+
+                    <dt class="col-sm-4">Estado</dt>
+                    <dd class="col-sm-8">
+                        @if (Model.estado == "activo")
+                        {
+                            <span class="badge bg-success">Activo</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">Inactivo</span>
+                        }
+                    </dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+    <div class="card-footer bg-light">
+        <form asp-action="Delete" method="post" class="d-flex justify-content-between">
+            <input type="hidden" asp-for="usuario_id" />
+            <input type="hidden" asp-for="persona_id" />
+
+            <a asp-action="Index" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left"></i> Cancelar
+            </a>
+            <button type="submit" class="btn btn-danger">
+                <i class="bi bi-trash"></i> Confirmar Eliminación
+            </button>
+        </form>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        dt {
+            font-weight: 500;
+        }
+
+        dd {
+            margin-bottom: 0.5rem;
+        }
+    </style>
+}
+
+@section Scripts {
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet" />
+}

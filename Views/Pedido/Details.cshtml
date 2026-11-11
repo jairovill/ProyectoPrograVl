@@ -1,0 +1,91 @@
+﻿@model ProyectoPrograVI.Models.Pedido
+@{
+    ViewData["Title"] = "Detalle de Pedido";
+}
+
+<div class="content-area">
+    <h2 class="mb-4">Detalle del Pedido @Model.NumeroSeguimiento</h2>
+
+    <div class="row mb-4">
+        <div class="col-md-6 mb-3 mb-md-0">
+            <div class="card">
+                <div class="card-header" style="background-color: var(--color-primary); color: var(--text-light);">
+                    <h3 class="mb-0">Información del Pedido</h3>
+                </div>
+                <div class="card-body">
+                    <p><strong>Fecha:</strong> @Model.FechaPedido.ToString("dd/MM/yyyy HH:mm")</p>
+                    <p>
+                        <strong>Estado:</strong>
+                        <span class="badge @(Model.Estado == "entregado" ? "bg-success" :
+                              Model.Estado == "cancelado" ? "bg-danger" : "bg-warning")">
+                            @Model.Estado
+                        </span>
+                    </p>
+                    <p><strong>Método de Pago:</strong> @Model.MetodoPago.Nombre</p>
+                    <p>
+                        <strong>Estado de Pago:</strong>
+                        <span class="badge @(Model.EstadoPago == "completado" ? "bg-success" :
+                              Model.EstadoPago == "fallido" ? "bg-danger" : "bg-warning")">
+                            @Model.EstadoPago
+                        </span>
+                    </p>
+                    <p><strong>Dirección de Envío:</strong> @Model.DireccionEnvio</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header" style="background-color: var(--color-primary); color: var(--text-light);">
+                    <h3 class="mb-0">Resumen de Pago</h3>
+                </div>
+                <div class="card-body">
+                    <p><strong>Subtotal:</strong> ₡@Model.Subtotal.ToString("N2")</p>
+                    <p><strong>Impuestos (13%):</strong> ₡@Model.Impuestos.ToString("N2")</p>
+                    <p class="font-weight-bold"><strong>Total:</strong> ₡@Model.Total.ToString("N2")</p>
+
+                    @if (!string.IsNullOrEmpty(Model.TransaccionId))
+                    {
+                        <p><strong>ID Transacción:</strong> @Model.TransaccionId</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h3 class="mb-3">Productos</h3>
+    <div class="table-responsive">
+        <table class="table-marron">
+            <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th>Precio Unitario</th>
+                    <th>Cantidad</th>
+                    <th>Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var detalle in Model.Detalles)
+                {
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <img src="@detalle.Libro.ImagenUrl" alt="Portada" class="img-thumbnail mr-2" style="height:60px; width:45px; object-fit: cover;" />
+                                <span>@detalle.Libro.Titulo</span>
+                            </div>
+                        </td>
+                        <td>₡@detalle.PrecioUnitario.ToString("N2")</td>
+                        <td>@detalle.Cantidad</td>
+                        <td>₡@detalle.Subtotal.ToString("N2")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="mt-4">
+        <a asp-action="Index" class="btn btn-outline-regresar">
+            <i class="bi bi-arrow-left"></i> Volver a mis pedidos
+        </a>
+    </div>
+</div>

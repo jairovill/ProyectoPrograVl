@@ -1,0 +1,17 @@
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# Build folders
+bin/
+obj/
+
+# Local configuration
+appsettings.Development.json
+.env
+
+# Temporary files
+*.log
+*.tmp

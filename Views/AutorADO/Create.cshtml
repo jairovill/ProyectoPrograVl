@@ -1,0 +1,100 @@
+﻿@model ProyectoPrograVI.Models.Autor
+
+<div class="content-area">
+    <div class="card">
+        <div class="card-header bg-marron-claro text-light">
+            <h2 class="mb-0">Agregar Autor</h2>
+        </div>
+        <div class="card-body">
+            <form asp-action="Create" method="post" class="needs-validation" novalidate>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label asp-for="identificacion" class="form-label">Identificación</label>
+                            <input asp-for="identificacion" class="form-control" required />
+                            <span asp-validation-for="identificacion" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label asp-for="nombre" class="form-label">Nombre</label>
+                            <input asp-for="nombre" class="form-control" required />
+                            <span asp-validation-for="nombre" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label asp-for="apellido1" class="form-label">Primer Apellido</label>
+                            <input asp-for="apellido1" class="form-control" required />
+                            <span asp-validation-for="apellido1" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label asp-for="apellido2" class="form-label">Segundo Apellido</label>
+                            <input asp-for="apellido2" class="form-control" />
+                            <span asp-validation-for="apellido2" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label asp-for="fecha_nacimiento" class="form-label">Fecha Nacimiento</label>
+                            <input asp-for="fecha_nacimiento" class="form-control" type="date" required />
+                            <span asp-validation-for="fecha_nacimiento" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group mb-3">
+                            <label asp-for="fecha_defuncion" class="form-label">Fecha Defunción</label>
+                            <input asp-for="fecha_defuncion" class="form-control" type="date" />
+                            <span asp-validation-for="fecha_defuncion" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group mt-4 d-flex gap-2">
+                    <button type="submit" class="btn btn-marron">
+                        <i class="fas fa-save me-1"></i> Guardar
+                    </button>
+                    <a class="btn btn-outline-marron" asp-controller="AutorADO" asp-action="Index">
+                        <i class="fas fa-arrow-left me-1"></i> Regresar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        // Validación del formulario
+        (function () {
+            'use strict'
+
+            // Fetch all the forms we want to apply custom Bootstrap validation styles to
+            var forms = document.querySelectorAll('.needs-validation')
+
+            // Loop over them and prevent submission
+            Array.prototype.slice.call(forms)
+                .forEach(function (form) {
+                    form.addEventListener('submit', function (event) {
+                        if (!form.checkValidity()) {
+                            event.preventDefault()
+                            event.stopPropagation()
+                        }
+
+                        form.classList.add('was-validated')
+                    }, false)
+                })
+        })()
+    </script>
+}

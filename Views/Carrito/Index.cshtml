@@ -1,0 +1,73 @@
+﻿@model List<ProyectoPrograVI.Models.ItemCarrito>
+@{
+    ViewData["Title"] = "Mi Carrito";
+    decimal total = Model?.Sum(item => item.Subtotal) ?? 0;
+}
+
+<div class="content-area">
+    <h2 class="text-center mb-4">Mi Carrito de Compras</h2>
+
+    @if (Model == null || !Model.Any())
+    {
+        <div class="alert alert-info text-center">
+            No hay libros en el carrito.
+            <a asp-controller="Libros" asp-action="Index" class="alert-link">Ir a la tienda</a>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table-marron">
+                <thead>
+                    <tr>
+                        <th>Imagen</th>
+                        <th>Título</th>
+                        <th>Autor</th>
+                        <th>Precio</th>
+                        <th>Cantidad</th>
+                        <th>Subtotal</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                <img src="@item.ImagenUrl" alt="Portada" class="img-thumbnail" style="height:80px; object-fit: contain; background-color: var(--color-light);" />
+                            </td>
+                            <td>@item.Titulo</td>
+                            <td>@item.Autor</td>
+                            <td>@item.Precio.ToString("C")</td>
+                            <td>@item.Cantidad</td>
+                            <td>@item.Subtotal.ToString("C")</td>
+                            <td>
+                                <a asp-action="Edit" asp-route-id="@item.CarritoId" class="btn btn-sm btn-outline-marron">
+                                    <i class="fas fa-edit"></i> Editar
+                                </a>
+                                <form asp-action="Delete" asp-route-id="@item.CarritoId" method="post" class="d-inline">
+                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('¿Seguro que desea eliminar este ítem?');">
+                                        <i class="fas fa-trash"></i> Eliminar
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="5" class="text-right font-weight-bold">Total:</td>
+                        <td class="font-weight-bold">@total.ToString("C")</td>
+                        <td></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <div class="text-right mt-4">
+            <a asp-controller="Pedido" asp-action="Checkout" class="btn btn-marron btn-lg">
+                <i class="fas fa-shopping-bag"></i> Realizar compra
+            </a>
+        </div>
+    }
+</div>

@@ -1,0 +1,140 @@
+﻿@model IEnumerable<ProyectoPrograVI.Models.MetodoPago>
+@{
+    ViewData["Title"] = "Métodos de Pago";
+    var soloActivos = Context.Request.Query["soloActivos"] == "true";
+}
+
+<h1>Métodos de Pago</h1>
+
+<div class="d-flex justify-content-between mb-3">
+    <div>
+        <a asp-action="Create" class="btn btn-sm btn-outline-marron me-2">
+            <i class="bi bi-plus-circle"></i> Nuevo Método
+        </a>
+    </div>
+    <a asp-action="Index" asp-controller="Home" class="btn btn-outline-regresar">
+        <i class="bi bi-arrow-left"></i> Regresar
+    </a>
+</div>
+
+@if (TempData["SuccessMensaje"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle me-2"></i> @TempData["SuccessMensaje"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+@if (TempData["ErrorMensaje"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle me-2"></i> @TempData["ErrorMensaje"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<!-- Filtro para mostrar solo activos -->
+<div class="card mb-4">
+    <div class="card-header bg-marron-claro">
+        <h5 class="mb-0 text-white">Filtros</h5>
+    </div>
+    <div class="card-body">
+        <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="filtroActivos" @(soloActivos ? "checked" : "")>
+            <label class="form-check-label" for="filtroActivos">
+                Mostrar solo métodos activos
+            </label>
+        </div>
+    </div>
+</div>
+
+<table id="tablaMetodosPago" class="table table-striped table-marron">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Estado</th>
+            <th style="width: 180px;">Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.MetodoPagoId</td>
+                <td>
+                    @switch (item.Nombre)
+                    {
+                        case "transferencia":
+                            <span class="badge bg-primary">Transferencia Bancaria</span>
+                            break;
+                        case "PayPal":
+                            <span class="badge bg-info">PayPal</span>
+                            break;
+                        case "tarjeta":
+                            <span class="badge bg-success">Tarjeta de Crédito/Débito</span>
+                            break;
+                        default:
+                            @item.Nombre
+                            break;
+                    }
+                </td>
+                <td>
+                    @if (item.Activo)
+                    {
+                        <span class="badge bg-success">Activo</span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-danger">Inactivo</span>
+                    }
+                </td>
+                <td>
+                    <div class="btn-group" role="group">
+                        <a asp-action="Edit" asp-route-id="@item.MetodoPagoId" class="btn btn-sm btn-outline-marron" title="Editar">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        <a asp-action="Delete" asp-route-id="@item.MetodoPagoId" class="btn btn-sm btn-outline-danger" title="Eliminar">
+                            <i class="bi bi-trash"></i>
+                        </a>
+                    </div>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <link href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+
+    <script>
+        $(document).ready(function() {
+            // Configuración de DataTable
+            $('#tablaMetodosPago').DataTable({
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json'
+                },
+                dom: '<"top"lf>rt<"bottom"ip>',
+                columnDefs: [
+                    { orderable: false, targets: [3] } // Deshabilitar ordenación para columna de acciones
+                ]
+            });
+
+            // Manejo del filtro
+            $('#filtroActivos').change(function() {
+                var mostrarSoloActivos = $(this).is(':checked');
+                window.location.href = '@Url.Action("Index")' +
+                    '?soloActivos=' + mostrarSoloActivos;
+            });
+
+            // Confirmación antes de eliminar
+            $('a[title="Eliminar"]').click(function(e) {
+                if(!confirm('¿Está seguro que desea eliminar este método de pago?')) {
+                    e.preventDefault();
+                }
+            });
+        });
+    </script>
+}

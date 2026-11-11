@@ -1,0 +1,32 @@
+﻿@model ProyectoPrograVI.Models.Autor
+
+@{
+    ViewData["Title"] = "Eliminar Autor";
+}
+
+<h1>Eliminar Autor</h1>
+<h3>¿Está seguro que desea eliminar este autor?</h3>
+
+<div>
+    <h4>Autor</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">Identificación</dt>
+        <dd class="col-sm-10">@Model.identificacion</dd>
+
+        <dt class="col-sm-2">Nombre</dt>
+        <dd class="col-sm-10">@Model.nombre @Model.apellido1 @Model.apellido2</dd>
+
+        <dt class="col-sm-2">Fecha de Nacimiento</dt>
+        <dd class="col-sm-10">@Model.fecha_nacimiento?.ToString("yyyy-MM-dd")</dd>
+
+        <dt class="col-sm-2">Fecha de Defunción</dt>
+        <dd class="col-sm-10">@Model.fecha_defuncion?.ToString("yyyy-MM-dd")</dd>
+    </dl>
+</div>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="autor_id" />
+    <button type="submit" class="btn btn-danger">Eliminar</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+</form>

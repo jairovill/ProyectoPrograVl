@@ -1,0 +1,62 @@
+﻿@model ProyectoPrograVI.Models.CarritoCompra
+
+@{
+    ViewData["Title"] = "Eliminar del Carrito";
+}
+
+<div class="container mt-4">
+    <h2>@ViewData["Title"]</h2>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+    }
+
+    <h3>¿Estás seguro que deseas eliminar este item de tu carrito?</h3>
+
+    <div class="card mt-4">
+        <div class="card-header">
+            <h4>@Model.TituloLibro</h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    @if (!string.IsNullOrEmpty(Model.ImagenUrl))
+                    {
+                        <img src="@Model.ImagenUrl" class="img-fluid" alt="@Model.TituloLibro">
+                    }
+                </div>
+                <div class="col-md-8">
+                    <dl class="row">
+                        <dt class="col-sm-4">Precio Unitario:</dt>
+                        <dd class="col-sm-8">@Model.PrecioUnitario.ToString("C")</dd>
+
+                        <dt class="col-sm-4">Cantidad:</dt>
+                        <dd class="col-sm-8">@Model.Cantidad</dd>
+
+                        <dt class="col-sm-4">Subtotal:</dt>
+                        <dd class="col-sm-8">@((Model.PrecioUnitario * Model.Cantidad).ToString("C"))</dd>
+
+                        <dt class="col-sm-4">Agregado el:</dt>
+                        <dd class="col-sm-8">@Model.FechaAgregado.ToString("g")</dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer">
+            <form asp-action="Delete" method="post">
+                <input type="hidden" asp-for="CarritoId" />
+                <button type="submit" class="btn btn-danger">
+                    <i class="fas fa-trash-alt"></i> Confirmar Eliminación
+                </button>
+                <a asp-action="Index" class="btn btn-secondary">
+                    <i class="fas fa-times"></i> Cancelar
+                </a>
+            </form>
+        </div>
+    </div>
+</div>

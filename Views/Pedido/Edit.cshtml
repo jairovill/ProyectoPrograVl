@@ -1,0 +1,55 @@
+﻿@model ProyectoPrograVI.Models.EditarPedidoViewModel
+
+@{
+    ViewData["Title"] = "Editar Estado de Pedido";
+}
+
+<div class="container mt-4">
+    <h2>@ViewData["Title"]</h2>
+    <hr />
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+
+    <div class="row">
+        <div class="col-md-6">
+            <form asp-action="Edit" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="PedidoId" />
+
+                <div class="form-group">
+                    <label class="control-label">Número de Pedido</label>
+                    <input asp-for="NumeroPedido" class="form-control" readonly />
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label">Estado Actual</label>
+                    <input asp-for="EstadoActual" class="form-control" readonly />
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="NuevoEstado" class="control-label"></label>
+                    <select asp-for="NuevoEstado" asp-items="Model.EstadosDisponibles" class="form-control">
+                        <option value="">-- Seleccione un estado --</option>
+                    </select>
+                    <span asp-validation-for="NuevoEstado" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mt-3">
+                    <button type="submit" class="btn btn-primary">Actualizar Estado</button>
+                    <a asp-controller="Pedido" asp-action="Admin" class="btn btn-secondary">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

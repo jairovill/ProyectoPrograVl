@@ -1,0 +1,82 @@
+﻿@model ProyectoPrograVI.Models.ItemCarrito
+
+@{
+    ViewData["Title"] = "Editar Item del Carrito";
+    int stockDisponible = ViewBag.StockDisponible;
+}
+
+<div class="container mt-4">
+    <h2>@ViewData["Title"]</h2>
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show">
+            @TempData["ErrorMessage"]
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+        </div>
+    }
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">@Model.Titulo</h4>
+                </div>
+                <div class="card-body">
+                    @if (!string.IsNullOrEmpty(Model.ImagenUrl))
+                    {
+                        <img src="@Model.ImagenUrl" class="img-fluid rounded mb-3" alt="@Model.Titulo">
+                    }
+                    <div class="h5">Precio unitario: @Model.Precio.ToString("C")</div>
+                    <div class="h5">Stock disponible: @stockDisponible</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h4 class="mb-0">Modificar Cantidad</h4>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Edit" method="post">
+                        <input type="hidden" asp-for="CarritoId" />
+                        <input type="hidden" asp-for="LibroId" />
+                        <input type="hidden" asp-for="Precio" />
+                        <input type="hidden" asp-for="Titulo" />
+                        <input type="hidden" asp-for="ImagenUrl" />
+
+                        <div class="form-group">
+                            <label asp-for="Cantidad">Cantidad:</label>
+                            <input asp-for="Cantidad" class="form-control" min="1" max="@stockDisponible" />
+                            <span asp-validation-for="Cantidad" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mt-4">
+                            <button type="submit" class="btn btn-primary btn-block">
+                                <i class="fas fa-save"></i> Guardar Cambios
+                            </button>
+                            <a asp-action="Index" class="btn btn-secondary btn-block">
+                                <i class="fas fa-arrow-left"></i> Volver al Carrito
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        $(document).ready(function() {
+            // Cierre automático de alertas después de 5 segundos
+            setTimeout(function() {
+                $(".alert").alert('close');
+            }, 5000);
+        });
+    </script>
+}

@@ -1,0 +1,93 @@
+﻿@model ProyectoPrograVI.Models.CarritoCompra
+
+@{
+    ViewData["Title"] = "Agregar al Carrito";
+    var libro = ViewBag.Libro as ProyectoPrograVI.Models.Libro;
+}
+
+<div class="container mt-4">
+    <h2>@ViewData["Title"]</h2>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+    }
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h4>@libro.Titulo</h4>
+                </div>
+                <div class="card-body">
+                    @if (!string.IsNullOrEmpty(libro.ImagenUrl))
+                    {
+                        <img src="@libro.ImagenUrl" class="img-fluid mb-3" alt="@libro.Titulo" style="max-height: 300px;">
+                    }
+                    <p class="text-muted">Autor: @libro.AutorNombre</p>
+                    <p class="h4 text-primary">@libro.Precio.ToString("C")</p>
+                    <p>@libro.Descripcion</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Agregar al Carrito</h4>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Create" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <input type="hidden" asp-for="UsuarioId" />
+                        <input type="hidden" asp-for="LibroId" value="@libro.LibroId" />
+                        <input type="hidden" asp-for="PrecioUnitario" value="@libro.Precio" />
+                        <input type="hidden" asp-for="TituloLibro" value="@libro.Titulo" />
+                        <input type="hidden" asp-for="ImagenUrl" value="@libro.ImagenUrl" />
+                        <input type="hidden" asp-for="Estado" value="Pendiente Pago" />
+
+                        <div class="form-group">
+                            <label asp-for="Cantidad" class="control-label"></label>
+                            <input asp-for="Cantidad" class="form-control" min="1" max="@libro.UnidadesDisponibles" />
+                            <span asp-validation-for="Cantidad" class="text-danger"></span>
+                            <small class="form-text text-muted">Disponibles: @libro.UnidadesDisponibles</small>
+                        </div>
+
+                        <div class="form-group mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg btn-block">
+                                <i class="fas fa-cart-plus"></i> Agregar al Carrito
+                            </button>
+                            <a asp-controller="Libro" asp-action="Details" asp-route-id="@libro.LibroId" class="btn btn-secondary btn-block">
+                                Volver al Libro
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        // Validación de cantidad máxima
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const cantidadInput = document.getElementById('Cantidad');
+            const maxDisponible = @libro.UnidadesDisponibles;
+
+            if (parseInt(cantidadInput.value) > maxDisponible) {
+                e.preventDefault();
+                alert('No hay suficientes unidades disponibles. Máximo: ' + maxDisponible);
+                cantidadInput.focus();
+            }
+        });
+    </script>
+}
